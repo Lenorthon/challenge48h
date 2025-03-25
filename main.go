@@ -2,13 +2,15 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"text/template"
-	"time"
+	"os"
 	"os/exec"
 	"runtime"
+	"text/template"
+	"time"
 
 	_ "github.com/glebarez/go-sqlite"
 	"golang.org/x/crypto/bcrypt"
@@ -34,6 +36,23 @@ func openbrowser(url string) error {
 
 var db *sql.DB
 var tmpl *template.Template
+
+// Wine représente la structure d'un vin dans le fichier JSON.
+type Wine struct {
+	Points      int     `json:"points"`
+	Title       string  `json:"title"`
+	Description string  `json:"description"`
+	TasterName  *string `json:"taster_name"`
+	TasterTwitterHandle *string `json:"taster_twitter_handle"`
+	Price       int     `json:"price"`
+	Designation *string `json:"designation"`
+	Variety     string  `json:"variety"`
+	Region1     string  `json:"region_1"`
+	Region2     *string `json:"region_2"`
+	Province    string  `json:"province"`
+	Country     string  `json:"country"`
+	Winery      string  `json:"winery"`
+}
 
 // Initialisation de la base de données et des templates
 func init() {
@@ -65,14 +84,37 @@ func Home1Handler(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "home1.html", nil)
 }
 
-// Page d'accueil connectée (home2) - protégée
+// Page d'accueil connectée (home2) - affichage de la liste des vins
 func Home2Handler(w http.ResponseWriter, r *http.Request) {
+	// Vérification de la présence du cookie de session
 	_, err := r.Cookie("session")
 	if err != nil {
 		http.Redirect(w, r, "/home1", http.StatusSeeOther)
 		return
 	}
-	tmpl.ExecuteTemplate(w, "home2.html", nil)
+
+	// Ouverture du fichier JSON contenant les vins
+	file, err := os.Open("wine-data-set.json")
+	if err != nil {
+		http.Error(w, "Erreur lors du chargement des données de vin.", http.StatusInternalServerError)
+		return
+	}
+	defer file.Close()
+
+	var wines []Wine
+	if err := json.NewDecoder(file).Decode(&wines); err != nil {
+		http.Error(w, "Erreur lors du parsing des données de vin.", http.StatusInternalServerError)
+		return
+	}
+
+	// Transmission des données au template
+	data := struct {
+		Wines []Wine
+	}{
+		Wines: wines,
+	}
+
+	tmpl.ExecuteTemplate(w, "home2.html", data)
 }
 
 // Handler d'inscription
@@ -99,7 +141,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	_, err = db.Exec("INSERT INTO users (username, password) VALUES (?, ?)", username, hashedPassword)
 	if err != nil {
-		// Si le mot de passe est incorrect, renvoyer la page login avec un message d'erreur
 		data := struct{ Error string }{Error: "Nom d'utilisateur déjà pris !"}
 		tmpl.ExecuteTemplate(w, "register.html", data)
 		return
@@ -121,7 +162,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var hashedPassword string
 	err := db.QueryRow("SELECT password FROM users WHERE username = ?", username).Scan(&hashedPassword)
 	if err != nil {
-		// Si l'utilisateur n'existe pas, on renvoie la page login avec un message d'erreur
 		data := struct{ Error string }{Error: "Identifiants incorrects."}
 		tmpl.ExecuteTemplate(w, "login.html", data)
 		return
@@ -129,13 +169,12 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	if err != nil {
-		// Si le mot de passe est incorrect, renvoyer la page login avec un message d'erreur
 		data := struct{ Error string }{Error: "Identifiants incorrects."}
 		tmpl.ExecuteTemplate(w, "login.html", data)
 		return
 	}
 
-	// Si tout est ok, création du cookie de session et redirection vers home2
+	// Création du cookie de session
 	http.SetCookie(w, &http.Cookie{
 		Name:    "session",
 		Value:   username,
@@ -152,12 +191,12 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		Value:   "",
 		Expires: time.Now().Add(-time.Hour),
 	})
-	// Affichage de la page logout indiquant que l'utilisateur a bien été déconnecté
+	// Affichage de la page logout indiquant la déconnexion
 	tmpl.ExecuteTemplate(w, "logout.html", nil)
 }
 
 func main() {
-	// Fichiers statiques
+	// Gestion des fichiers statiques (CSS)
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css"))))
 
 	// Routes d'authentification et d'accès
@@ -167,7 +206,7 @@ func main() {
 	http.HandleFunc("/login", LoginHandler)
 	http.HandleFunc("/logout", LogoutHandler)
 
-	// Démarrer le site
+	// Démarrage du serveur
 	fmt.Println("\033[35m" + "Serveur démarré sur http://localhost" + "\033[0m")
 	openbrowser("http://localhost:8080/home1")
 	log.Fatal(http.ListenAndServe(":8080", nil))

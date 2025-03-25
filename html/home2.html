@@ -2,11 +2,23 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Accueil Connecté</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <title>Accueil Connecté - Vins</title>
+    <link rel="stylesheet" href="/css/home2.css">
 </head>
 <body>
-    <h1>Bienvenue dans votre espace personnel !</h1>
-    <p><a href="/logout">Déconnexion</a></p>
+    <h1>Liste des Vins</h1>
+    <div class="wine-container">
+        {{range .Wines}}
+        <div class="wine-card">
+            <h2>{{.Title}}</h2>
+            <p><strong>Points :</strong> {{.Points}}</p>
+            <p><strong>Prix :</strong> ${{.Price}}</p>
+            <p><strong>Variété :</strong> {{.Variety}}</p>
+            <!-- <p><strong>Région :</strong> {{.Region1}}{{if .Region2}} - {{.Region2}}{{end}}</p> -->
+            <!-- <p><strong>Description :</strong> {{.Description}}</p> -->
+        </div>
+        {{end}}
+    </div>
+    <p class="logout-link"><a href="/logout">Déconnexion</a></p>
 </body>
 </html>
