@@ -99,7 +99,9 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	_, err = db.Exec("INSERT INTO users (username, password) VALUES (?, ?)", username, hashedPassword)
 	if err != nil {
-		http.Error(w, "Nom d'utilisateur déjà pris.", http.StatusConflict)
+		// Si le mot de passe est incorrect, renvoyer la page login avec un message d'erreur
+		data := struct{ Error string }{Error: "Nom d'utilisateur déjà pris !"}
+		tmpl.ExecuteTemplate(w, "register.html", data)
 		return
 	}
 

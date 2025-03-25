@@ -8,7 +8,7 @@
 <body>
     <h1>Connexion</h1>
     {{if .Error}}
-    <p style="color:red;">{{.Error}}</p>
+    <p>{{.Error}}</p>
     {{end}}
     <form method="post">
         <input type="text" name="username" placeholder="Nom d'utilisateur" required>
