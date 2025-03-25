@@ -6,19 +6,22 @@
     <link rel="stylesheet" href="/css/home2.css">
 </head>
 <body>
+    <!-- Menu en haut à droite -->
+    <div class="menu">
+        <a href="/account">Mon Compte</a>
+        <a href="/logout">Déconnexion</a>
+    </div>
     <h1>Liste des Vins</h1>
     <div class="wine-container">
-        {{range .Wines}}
+        {{range $index, $wine := .Wines}}
         <div class="wine-card">
-            <h2>{{.Title}}</h2>
-            <p><strong>Points :</strong> {{.Points}}</p>
-            <p><strong>Prix :</strong> ${{.Price}}</p>
-            <p><strong>Variété :</strong> {{.Variety}}</p>
-            <!-- <p><strong>Région :</strong> {{.Region1}}{{if .Region2}} - {{.Region2}}{{end}}</p> -->
-            <!-- <p><strong>Description :</strong> {{.Description}}</p> -->
+            <h2>{{$wine.Title}}</h2>
+            <p><strong>Points :</strong> {{$wine.Points}}</p>
+            <p><strong>Prix :</strong> ${{$wine.Price}}</p>
+            <p><strong>Variété :</strong> {{$wine.Variety}}</p>
+            <a class="details-link" href="/details?id={{$index}}">Voir le détail</a>
         </div>
         {{end}}
     </div>
-    <p class="logout-link"><a href="/logout">Déconnexion</a></p>
 </body>
 </html>

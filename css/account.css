@@ -1,0 +1,66 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e9ecef;
+    margin: 0;
+    padding: 20px;
+}
+.menu {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+}
+.menu a {
+    margin-left: 10px;
+    color: #007BFF;
+    text-decoration: none;
+}
+.menu a:hover {
+    text-decoration: underline;
+}
+.content {
+    max-width: 800px;
+    margin: 80px auto 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.purchase-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+.purchase-card {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    width: 250px;
+    text-align: center;
+}
+.back-btn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 15px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.back-btn:hover {
+    opacity: 0.9;
+}
+.delete-btn {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.delete-btn:hover {
+    opacity: 0.9;
+}

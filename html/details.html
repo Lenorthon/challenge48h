@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Détails du Vin</title>
+    <link rel="stylesheet" href="/css/details.css">
+</head>
+<body>
+    <div class="menu">
+        <a href="/account">Mon Compte</a>
+        <a href="/logout">Déconnexion</a>
+    </div>
+    <div class="content">
+        <h1>{{.Wine.Title}}</h1>
+        <p><strong>Points :</strong> {{.Wine.Points}}</p>
+        <p><strong>Prix :</strong> ${{.Wine.Price}}</p>
+        <p><strong>Variété :</strong> {{.Wine.Variety}}</p>
+        <p><strong>Région :</strong> {{.Wine.Region1}}{{if .Wine.Region2}} - {{.Wine.Region2}}{{end}}</p>
+        <p><strong>Description :</strong> {{.Wine.Description}}</p>
+        <form action="/purchase" method="post">
+            <input type="hidden" name="id" value="{{.Index}}">
+            <button type="submit" class="purchase-btn">Payer</button>
+        </form>
+        <button onclick="window.location.href='/home2'" class="back-btn">Retour</button>
+    </div>
+</body>
+</html>

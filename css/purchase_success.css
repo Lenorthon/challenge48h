@@ -1,0 +1,40 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e9ecef;
+    margin: 0;
+    padding: 20px;
+}
+.menu {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+}
+.menu a {
+    margin-left: 10px;
+    color: #007BFF;
+    text-decoration: none;
+}
+.menu a:hover {
+    text-decoration: underline;
+}
+.content {
+    max-width: 600px;
+    margin: 80px auto 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+}
+.back-btn, .account-btn {
+    margin: 10px 5px;
+    padding: 10px 15px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.back-btn:hover, .account-btn:hover {
+    opacity: 0.9;
+}
