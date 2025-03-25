@@ -11,24 +11,8 @@ import (
 	"runtime"
 
 	_ "github.com/glebarez/go-sqlite"
-	"golang.org/x/time/rate"
 	"golang.org/x/crypto/bcrypt"
 )
-
-var db *sql.DB
-var tmpl *template.Template
-var limiter = rate.NewLimiter(rate.Every(10*time.Second), 1)
-
-// Middleware de limitation de requêtes
-func rateLimitMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !limiter.Allow() {
-			http.Error(w, "Trop de requêtes, réessayez plus tard.", http.StatusTooManyRequests)
-			return
-		}
-		next.ServeHTTP(w, r)
-	})
-}
 
 // openbrowser ouvre le navigateur par défaut sur l'URL donnée.
 func openbrowser(url string) error {
@@ -47,6 +31,9 @@ func openbrowser(url string) error {
 	args = append(args, url)
 	return exec.Command(cmd, args...).Start()
 }
+
+var db *sql.DB
+var tmpl *template.Template
 
 // Initialisation de la base de données et des templates
 func init() {
@@ -178,16 +165,8 @@ func main() {
 	http.HandleFunc("/login", LoginHandler)
 	http.HandleFunc("/logout", LogoutHandler)
 
-	// Application du rate limiter
-	http.Handle("/", rateLimitMiddleware(http.DefaultServeMux))
-
-	fmt.Println("\033[35m" + "Serveur démarré sur https://localhost" + "\033[0m")
-
-	openbrowser("https://localhost/home1")
-
-	// Utiliser le certificat auto-signé et la clé privée
-	err := http.ListenAndServeTLS(":443", "cert.pem", "localhost.key", nil)
-	if err != nil {
-		fmt.Println("Erreur lors du démarrage du serveur HTTPS:", err)
-	}
+	// Démarrer le site
+	fmt.Println("\033[35m" + "Serveur démarré sur http://localhost" + "\033[0m")
+	openbrowser("http://localhost:8080/home1")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }

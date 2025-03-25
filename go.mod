@@ -5,7 +5,6 @@ go 1.23.0
 require (
 	github.com/glebarez/go-sqlite v1.22.0
 	golang.org/x/crypto v0.36.0
-	golang.org/x/time v0.11.0
 )
 
 require (
